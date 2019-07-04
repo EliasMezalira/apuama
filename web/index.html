@@ -1,0 +1,352 @@
+
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="assets/img/favicon.ico">
+
+    <title>Apuama</title>
+
+    <link href="assets/css/index.css" rel="stylesheet">
+    <!-- Principal CSS do Bootstrap -->
+    <link href="https://getbootstrap.com.br/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Estilos customizados para esse template -->
+    <link href="https://getbootstrap.com.br/docs/4.1/examples/dashboard/dashboard.css" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+		<script src="assets/js/jquery.min.js"></script>
+
+    <script>
+
+      var url = "http://10.200.0.31:8000/";
+
+			$(document).ready(function(){
+				clickHome();
+			});
+
+      function clickHome() {
+        $.ajax({
+          type: 'GET',
+          url: url + "x/",
+          dataType: 'json',
+          async: false,
+          beforeSend: function() {
+          },
+          success: function(data) {
+            var externa = data.externa;
+            var interna = data.interna;
+            var gas = data.gas;
+            var umidade = data.umidade;
+            var element;
+            //$(".tag-marked-exercise").remove();
+
+            $('#home').removeAttr('style');
+            $('#temperatura').attr('style', 'display: none;');
+            $('#gas').attr('style', 'display: none;');
+            $('#umidade').attr('style', 'display: none;');
+
+            $('.home-temp-externa .valor').text(parseFloat(externa.valor).toString());
+            $('.home-temp-externa .unidade').text(externa.unidade);
+            $('.home-temp-interna .valor').text(parseFloat(interna.valor));
+            $('.home-temp-interna .unidade').text(interna.unidade);
+
+            $('.home-gas .valor').text((gas.valor).toString());
+            $('.home-gas .unidade').text(gas.unidade);
+
+            $('.home-umidade .valor').text(umidade.valor);
+            $('.home-umidade .unidade').text(umidade.unidade);
+          },
+          error: function(xhr) {
+            console.log('passou');
+            $(".errors").html("<div class='alert alert-danger'>Erro ao carregar</div>");
+          },
+          complete: function() {
+          }
+        });
+      }
+
+      function clickTemperatura() {
+        $.ajax({
+          type: 'GET',
+          url: url + "temperatura/",
+          dataType: 'json',
+          async: false,
+          beforeSend: function() {
+          },
+          success: function(data) {
+            var externa = data.externa;
+            var interna = data.interna;
+            var element;
+            //$(".tag-marked-exercise").remove();
+
+            $('#temperatura').removeAttr('style');
+            $('#home').attr('style', 'display: none;');
+            $('#gas').attr('style', 'display: none;');
+            $('#umidade').attr('style', 'display: none;');
+
+            var options = {
+
+              redFrom: 40, redTo: 80,
+              yellowFrom: 25, yellowTo: 39,
+              min: -15, max: 80,
+              minorTicks: 10
+            };
+
+            google.charts.load('current', {'packages':['gauge']});
+            google.charts.setOnLoadCallback(drawChart('chart_div_externa', parseFloat(externa.valor), 'Temperatura externa', options));
+            google.charts.setOnLoadCallback(drawChart('chart_div_interna', parseFloat(interna.valor), 'Temperatura interna', options));
+            $('#externa .valor').text(parseFloat(externa.valor));
+            $('#externa .unidade').text(externa.unidade);
+            $('#interna .valor').text(parseFloat(interna.valor));
+            $('#interna .unidade').text(interna.unidade);
+          },
+          error: function(xhr) {
+            $(".errors").html("<div class='alert alert-danger'>Erro ao carregar</div>");
+          },
+          complete: function() {
+          }
+        });
+      }
+
+      function clickGas() {
+        $.ajax({
+          type: 'GET',
+          url: url + "gas/",
+          dataType: 'json',
+          async: true,
+          beforeSend: function() {
+          },
+          success: function(data) {
+            var gas = data;
+            var element;
+            //$(".tag-marked-exercise").remove();
+
+            $('#gas').removeAttr('style');
+            $('#home').attr('style', 'display: none;');
+            $('#temperatura').attr('style', 'display: none;');
+            $('#umidade').attr('style', 'display: none;');
+
+            var options = {
+
+              redFrom: 87, redTo: 380,
+              yellowFrom: 60, yellowTo: 86,
+              min: 0, max: 380,
+              minorTicks: 10
+            };
+
+            google.charts.load('current', {'packages':['gauge']});
+            google.charts.setOnLoadCallback(drawChart('chart_div_gas', parseFloat(gas.valor), 'Nivel de gás', options));
+
+            $('#gas .valor').text(gas.valor);
+            $('#gas .unidade').text(gas.unidade);
+          },
+          error: function(xhr) {
+            $(".errors").html("<div class='alert alert-danger'>Erro ao carregar</div>");
+          },
+          complete: function() {
+          }
+        });
+      }
+
+      function clickUmidade() {
+        $.ajax({
+          type: 'GET',
+          url: url + "umidade/",
+          dataType: 'json',
+          async: true,
+          beforeSend: function() {
+          },
+          success: function(data) {
+            var umidade = data;
+            var element;
+            //$(".tag-marked-exercise").remove();
+
+            $('#umidade').removeAttr('style');
+            $('#home').attr('style', 'display: none;');
+            $('#temperatura').attr('style', 'display: none;');
+            $('#gas').attr('style', 'display: none;');
+
+            var options = {
+
+              redFrom: 86, redTo: 100,
+              yellowFrom: 70, yellowTo: 85,
+              min: 0, max: 100,
+              minorTicks: 10
+            };
+
+            google.charts.load('current', {'packages':['gauge']});
+						console.log('sfasd');
+            google.charts.setOnLoadCallback(drawChart('chart_div_umidade', parseFloat(umidade.valor), 'Umidade do ar', options));
+
+            $('#umidade .valor').text(umidade.valor);
+            $('#umidade .unidade').text(umidade.unidade);
+          },
+          error: function(xhr) {
+            $(".errors").html("<div class='alert alert-danger'>Erro ao carregar</div>");
+          },
+          complete: function() {
+          }
+        });
+      }
+
+			function drawChart(div, valor, title, options) {
+				console.log('presunto');
+        var data = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          [title, valor]
+        ]);
+				console.log('queijo');
+        var chart = new google.visualization.Gauge(document.getElementById(div));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+      <span class="navbar-brand col-sm-3 col-md-2 mr-0">
+        <img src="assets/img/logo.png" style="height: 21px; margin-right: 15px;"/>
+        <big>Apuama</big>
+      </span>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="#" onclick="clickHome()">
+                  <span data-feather="home"></span>
+                  Geral <span class="sr-only">(atual)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="clickTemperatura()">
+                  <span data-feather="shopping-cart"></span>
+                  Temperatura
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="clickUmidade()">
+                  <span data-feather="users"></span>
+                  Nível de umidade
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#" onclick="clickGas()">
+                  <span data-feather="bar-chart-2"></span>
+                  Nível de gás do ar
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+          <div id="home">
+            <div class="row">
+              <div class="col-md-6 home-temp-interna">
+                <div class="middle">
+                  <span class="col-title">Temperatura interna</span><br>
+                  <span class="valor">0</span>
+                  <span class="unidade unidade-home">°C</span>
+                </div>
+              </div>
+              <div class="col-md-6 home-temp-externa">
+                <div class="middle">
+                  <span class="col-title">Temperatura externa</span><br>
+                  <span class="valor">0</span>
+                  <span class="unidade unidade-home">°C</span>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 home-umidade">
+                <div class="middle">
+                  <span class="col-title">Umidade do ar</span><br>
+                  <span class="valor">0</span>
+                  <span class="unidade unidade-home">g/Kg</span>
+                </div>
+              </div>
+              <div class="col-md-6 home-gas">
+                <div class="middle">
+                  <span class="col-title">Nível de gás no ar</span><br>
+                  <span class="valor">0</span>
+                  <span class="unidade unidade-home">ppm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="temperatura" style="display: none;">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="middle" id="interna">
+                  <span class="fonte-pequena">Temperatura interna</span><br>
+                  <span class="valor fonte-grande">0</span>
+                  <span class="unidade unidade-medida">°C</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="middle">
+                  <div id="chart_div_interna" style="width: 800px; height:240px;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="middle" id="externa">
+                  <span class="fonte-pequena">Temperatura externa</span><br>
+                  <span class="valor fonte-grande">0</span>
+                  <span class="unidade unidade-medida">°C</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="middle">
+                  <div id="chart_div_externa" style="width: 800px; height: 240px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="umidade" style="display: none;">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="middle">
+                  <span class="fonte-pequena">Nível de umidade do ar</span><br>
+                  <span class="valor fonte-grande">0</span>
+                  <span class="unidade unidade-medida">°C</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="middle">
+                  <div id="chart_div_umidade" style="width: 800px; height:240px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="gas" style="display: none;">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="middle">
+                  <span class="fonte-pequena">Nível de gás do ar</span><br>
+                  <span class="valor fonte-grande">0</span>
+                  <span class="unidade unidade-medida">°C</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="middle">
+                  <div id="chart_div_gas" style="width: 800px; height:240px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
